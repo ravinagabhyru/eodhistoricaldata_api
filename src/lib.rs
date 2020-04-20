@@ -14,35 +14,36 @@ use chrono::NaiveDate;
 use reqwest::StatusCode;
 use serde::Deserialize;
 use serde_json::Value;
+use std::fmt;
 
 #[derive(Deserialize, Debug)]
 pub struct RealTimeQuote {
     /// Ticker name
-    code: String,
+    pub code: String,
     /// UNIX timestamp convention, seconds passed sind 1st January 1970
-    timestamp: u64,
-    gmtoffset: i32,
-    open: f64,
-    high: f64,
-    low: f64,
-    close: f64,
-    volume: usize,
+    pub timestamp: u64,
+    pub gmtoffset: i32,
+    pub open: f64,
+    pub high: f64,
+    pub low: f64,
+    pub close: f64,
+    pub volume: usize,
     #[serde(rename = "previousClose")]
-    previous_close: f64,
-    change: f64,
-    change_p: f64,
+    pub previous_close: f64,
+    pub change: f64,
+    pub change_p: f64,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct HistoricQuote {
     /// Quote date as string using the format `%Y-%m-%d`
-    date: String,
-    open: f64,
-    high: f64,
-    low: f64,
-    close: f64,
-    adjusted_close: f64,
-    volume: usize,
+    pub date: String,
+    pub open: f64,
+    pub high: f64,
+    pub low: f64,
+    pub close: f64,
+    pub adjusted_close: f64,
+    pub volume: usize,
 }
 
 #[derive(Debug)]
@@ -50,6 +51,22 @@ pub enum EodHistDataError {
     FetchFailed(StatusCode),
     DeserializeFailed,
     ConnectionFailed,
+}
+
+impl std::error::Error for EodHistDataError {
+    fn cause(&self) -> Option<&dyn std::error::Error> {
+        Some(self)
+    }
+}
+
+impl fmt::Display for EodHistDataError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::FetchFailed(status) => write!(f, "fetchin the data from eodhistoricaldata failed: with status code {}", status),
+            Self::DeserializeFailed => write!(f, "deserializing response from eodhistoricaldata failed"),
+            Self::ConnectionFailed => write!(f, "connection to eodhistoricaldata server failed"),
+        }
+    }
 }
 
 /// Container for connection paramters to edohistoricaldata server

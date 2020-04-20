@@ -1,6 +1,6 @@
 [package]
 name = "eodhistoricaldata_api"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Mark Beinker <mwb@quantlink.de>"]
 edition = "2018"
 description = "A rust adapter eodhistoricaldata, a provider of financial data."
