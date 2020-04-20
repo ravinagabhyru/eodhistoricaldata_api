@@ -11,3 +11,7 @@ keywords = ["finance", "eodhistoricaldata", "stock", "share"]
 categories = ["api-bindings"]
 
 [dependencies]
+reqwest = "0.9"
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+chrono = "0.4"

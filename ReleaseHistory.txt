@@ -1,2 +1,5 @@
 Version 0.1.0
 * Initial setup of project
+* Implementation of request for single quotes and quote history
+* Unit tests for single quotes and quote history
+
