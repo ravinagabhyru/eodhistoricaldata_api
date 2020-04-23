@@ -38,12 +38,12 @@ pub struct RealTimeQuote {
 pub struct HistoricQuote {
     /// Quote date as string using the format `%Y-%m-%d`
     pub date: String,
-    pub open: f64,
-    pub high: f64,
-    pub low: f64,
-    pub close: f64,
+    pub open: Option<f64>,
+    pub high: Option<f64>,
+    pub low: Option<f64>,
+    pub close: Option<f64>,
     pub adjusted_close: f64,
-    pub volume: usize,
+    pub volume: Option<usize>,
 }
 
 #[derive(Debug)]
