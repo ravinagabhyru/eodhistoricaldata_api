@@ -86,19 +86,19 @@ impl EodHistConnector {
     }
 
     /// Retrieve the latest quote for the given ticker
-    pub fn get_latest_quote(&self, ticker: &str) -> Result<RealTimeQuote, EodHistDataError> {
+    pub async fn get_latest_quote(&self, ticker: &str) -> Result<RealTimeQuote, EodHistDataError> {
         let url: String = format!(
             "{}/real-time/{}?api_token={}&fmt=json",
             self.url, ticker, self.api_token
         );
-        let resp = self.send_request(&url)?;
+        let resp = self.send_request(&url).await?;
         let quote: RealTimeQuote =
             serde_json::from_value(resp).map_err(|_| EodHistDataError::DeserializeFailed)?;
         Ok(quote)
     }
 
     /// Retrieve the quote history for the given ticker form date start to end (inklusive), if available
-    pub fn get_quote_history(
+    pub async fn get_quote_history(
         &self,
         ticker: &str,
         start: NaiveDate,
@@ -112,21 +112,21 @@ impl EodHistConnector {
             end.format("%Y-%m-%d"),
             self.api_token
         );
-        let resp = self.send_request(&url)?;
+        let resp = self.send_request(&url).await?;
         let quotes: Vec<HistoricQuote> =
             serde_json::from_value(resp).map_err(|_| EodHistDataError::DeserializeFailed)?;
         Ok(quotes)
     }
 
     /// Send request to eodhistoricaldata server and transform response to JSON value
-    fn send_request(&self, url: &str) -> Result<Value, EodHistDataError> {
-        let resp = reqwest::get(url);
+    async fn send_request(&self, url: &str) -> Result<Value, EodHistDataError> {
+        let resp = reqwest::get(url).await;
         if resp.is_err() {
             return Err(EodHistDataError::ConnectionFailed);
         }
-        let mut resp = resp.unwrap();
+        let resp = resp.unwrap();
         match resp.status() {
-            StatusCode::OK => match resp.json() {
+            StatusCode::OK => match resp.json().await {
                 Ok(json) => Ok(json),
                 _ => Err(EodHistDataError::DeserializeFailed),
             },
@@ -139,13 +139,14 @@ impl EodHistConnector {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use tokio_test;
 
     #[test]
     fn test_get_single_quote() {
         // Use the official test token
         let token = "OeAFFmMliFG5orCUuwAKQ8l4WWFQ67YX".to_string();
         let provider = EodHistConnector::new(token);
-        let quote = provider.get_latest_quote("AAPL.US").unwrap();
+        let quote = tokio_test::block_on(provider.get_latest_quote("AAPL.US")).unwrap();
 
         assert_eq!(&quote.code, "AAPL.US");
     }
@@ -157,7 +158,7 @@ mod tests {
         let provider = EodHistConnector::new(token);
         let start = NaiveDate::from_ymd(2020, 01, 01);
         let end = NaiveDate::from_ymd(2020, 01, 31);
-        let quotes = provider.get_quote_history("AAPL.US", start, end).unwrap();
+        let quotes = tokio_test::block_on(provider.get_quote_history("AAPL.US", start, end)).unwrap();
 
         assert_eq!(quotes.len(), 21);
         assert_eq!(quotes[0].date, "2020-01-02");
