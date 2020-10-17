@@ -15,6 +15,7 @@ use reqwest::StatusCode;
 use serde::Deserialize;
 use serde_json::Value;
 use std::fmt;
+use tokio_compat_02::FutureExt;
 
 #[derive(Deserialize, Debug)]
 pub struct RealTimeQuote {
@@ -120,7 +121,7 @@ impl EodHistConnector {
 
     /// Send request to eodhistoricaldata server and transform response to JSON value
     async fn send_request(&self, url: &str) -> Result<Value, EodHistDataError> {
-        let resp = reqwest::get(url).await;
+        let resp = reqwest::get(url).compat().await;
         if resp.is_err() {
             return Err(EodHistDataError::ConnectionFailed);
         }
