@@ -1,3 +1,6 @@
+Version 0.3.4
+* Move to async
+
 Version 0.2.0
  * Most of the fields of `HistoricQuote` are now optional. This way, reading the full history
    does not break even if some values have null values. For realtime quotes, it is still 
