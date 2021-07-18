@@ -47,6 +47,20 @@ pub struct HistoricQuote {
     pub volume: Option<usize>,
 }
 
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct Dividend {
+    /// Quote date as string using the format `%Y-%m-%d`
+    pub date: String,
+    pub declaration_date: String,
+    pub record_date: String,
+    pub payment_date: String,
+    pub period: String,
+    pub value: f64,
+    pub unadjusted_value: f64,
+    pub currency: String,
+}
+
 #[derive(Debug)]
 pub enum EodHistDataError {
     FetchFailed(StatusCode),
@@ -92,6 +106,7 @@ impl EodHistConnector {
             "{}/real-time/{}?api_token={}&fmt=json",
             self.url, ticker, self.api_token
         );
+        println!("{:?}", url);
         let resp = self.send_request(&url).await?;
         let quote: RealTimeQuote =
             serde_json::from_value(resp).map_err(|_| EodHistDataError::DeserializeFailed)?;
@@ -113,12 +128,33 @@ impl EodHistConnector {
             end.format("%Y-%m-%d"),
             self.api_token
         );
+        println!("{:?}", url);
         let resp = self.send_request(&url).await?;
         let quotes: Vec<HistoricQuote> =
             serde_json::from_value(resp).map_err(|_| EodHistDataError::DeserializeFailed)?;
         Ok(quotes)
     }
 
+    /// Retrieve the quote history for the given ticker form date start to end (inklusive), if available
+    pub async fn get_dividend_history(
+        &self,
+        ticker: &str,
+        start: NaiveDate,
+    ) -> Result<Vec<Dividend>, EodHistDataError> {
+        let url: String = format!(
+            "{}/div/{}?from={}&api_token={}&fmt=json",
+            self.url,
+            ticker,
+            start.format("%Y-%m-%d"),
+            self.api_token
+        );
+        println!("{:?}", url);
+        let resp = self.send_request(&url).await?;
+        let dividends: Vec<Dividend> =
+            serde_json::from_value(resp).map_err(|_| EodHistDataError::DeserializeFailed)?;
+        Ok(dividends)
+    }
+    
     /// Send request to eodhistoricaldata server and transform response to JSON value
     async fn send_request(&self, url: &str) -> Result<Value, EodHistDataError> {
         let resp = reqwest::get(url).compat().await;
@@ -164,5 +200,16 @@ mod tests {
         assert_eq!(quotes.len(), 21);
         assert_eq!(quotes[0].date, "2020-01-02");
         assert_eq!(quotes[quotes.len() - 1].date, "2020-01-31");
+    }
+
+    #[test]
+    fn test_get_dividen_history() {
+        // Use the official test token
+        let token = "OeAFFmMliFG5orCUuwAKQ8l4WWFQ67YX".to_string();
+        let provider = EodHistConnector::new(token);
+        let start = NaiveDate::from_ymd(2020, 01, 01);
+        let dividends = tokio_test::block_on(provider.get_dividend_history("AAPL.US", start)).unwrap();
+
+        assert!(dividends.len() >= 4);
     }
 }
