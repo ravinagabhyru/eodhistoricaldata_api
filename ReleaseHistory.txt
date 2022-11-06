@@ -1,4 +1,8 @@
-Verson 0.3.5
+Version 0.4.0
+* Using thiserror for error handling (cange of error messages)
+* Declaration Date of Dividend is now optional (since it is not always delivered)
+
+Version 0.3.5
 * Additional method for request history of dividend payments
 
 Version 0.3.4

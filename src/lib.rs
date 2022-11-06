@@ -1,20 +1,22 @@
-//! # eodhistoricaldata API
-//!
-//! This project provides a set of functions to receive data from the
-//! the eodhistoricaldata website via their [API](https://eodhistoricaldata.com/knowledgebase/). This project
-//! is licensed under Apache 2.0 or MIT license (see files LICENSE-Apache2.0 and LICENSE-MIT).
-//!
-//! # Usage
-//! Please note that you need to have a registered account with eodhistoricaldata to
-//! receive an individual API token. The most basic account is free but limited to
-//! EOD Historical Data and LIVE/Realtime Data only and allows only 20 requests per day.
-//!
+/*!
+# eodhistoricaldata API
+
+This project provides a set of functions to receive data from the
+the eodhistoricaldata website via their [API](https://eodhistoricaldata.com/knowledgebase/). This project
+is licensed under Apache 2.0 or MIT license (see files LICENSE-Apache2.0 and LICENSE-MIT).
+
+# Usage
+Please note that you need to have a registered account with eodhistoricaldata to
+receive an individual API token. The most basic account is free but limited to
+EOD Historical Data and LIVE/Realtime Data only and allows only 20 requests per day.
+
+*/
 
 use chrono::NaiveDate;
 use reqwest::StatusCode;
 use serde::Deserialize;
 use serde_json::Value;
-use std::fmt;
+use thiserror::Error;
 use tokio_compat_02::FutureExt;
 
 #[derive(Deserialize, Debug)]
@@ -50,41 +52,27 @@ pub struct HistoricQuote {
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Dividend {
+    pub currency: String,
     /// Quote date as string using the format `%Y-%m-%d`
     pub date: String,
-    pub declaration_date: String,
-    pub record_date: String,
+    pub declaration_date: Option<String>,
     pub payment_date: String,
     pub period: String,
-    pub value: f64,
+    pub record_date: String,
     pub unadjusted_value: f64,
-    pub currency: String,
+    pub value: f64,
 }
 
-#[derive(Debug)]
+#[derive(Error, Debug)]
 pub enum EodHistDataError {
+    #[error("fetching the data from eodhistoricaldata failed with status code {0}")]
     FetchFailed(StatusCode),
-    DeserializeFailed,
-    ConnectionFailed,
+    #[error("deserializing response from eodhistoricaldata failed")]
+    DeserializeFailed(#[from] reqwest::Error),
+    #[error("connection to eodhistoricaldata server failed")]
+    ConnectionFailed(#[from] serde_json::Error),
 }
 
-impl std::error::Error for EodHistDataError {
-    fn cause(&self) -> Option<&dyn std::error::Error> {
-        Some(self)
-    }
-}
-
-impl fmt::Display for EodHistDataError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::FetchFailed(status) => write!(f, "fetchin the data from eodhistoricaldata failed: with status code {}", status),
-            Self::DeserializeFailed => write!(f, "deserializing response from eodhistoricaldata failed"),
-            Self::ConnectionFailed => write!(f, "connection to eodhistoricaldata server failed"),
-        }
-    }
-}
-
-/// Container for connection paramters to edohistoricaldata server
 pub struct EodHistConnector {
     url: &'static str,
     api_token: String,
@@ -106,10 +94,8 @@ impl EodHistConnector {
             "{}/real-time/{}?api_token={}&fmt=json",
             self.url, ticker, self.api_token
         );
-        println!("{:?}", url);
         let resp = self.send_request(&url).await?;
-        let quote: RealTimeQuote =
-            serde_json::from_value(resp).map_err(|_| EodHistDataError::DeserializeFailed)?;
+        let quote: RealTimeQuote = serde_json::from_value(resp)?;
         Ok(quote)
     }
 
@@ -128,10 +114,8 @@ impl EodHistConnector {
             end.format("%Y-%m-%d"),
             self.api_token
         );
-        println!("{:?}", url);
         let resp = self.send_request(&url).await?;
-        let quotes: Vec<HistoricQuote> =
-            serde_json::from_value(resp).map_err(|_| EodHistDataError::DeserializeFailed)?;
+        let quotes: Vec<HistoricQuote> = serde_json::from_value(resp)?;
         Ok(quotes)
     }
 
@@ -148,26 +132,16 @@ impl EodHistConnector {
             start.format("%Y-%m-%d"),
             self.api_token
         );
-        println!("{:?}", url);
         let resp = self.send_request(&url).await?;
-        let dividends: Vec<Dividend> =
-            serde_json::from_value(resp).map_err(|_| EodHistDataError::DeserializeFailed)?;
+        let dividends: Vec<Dividend> = serde_json::from_value(resp)?;
         Ok(dividends)
     }
-    
+
     /// Send request to eodhistoricaldata server and transform response to JSON value
     async fn send_request(&self, url: &str) -> Result<Value, EodHistDataError> {
-        let resp = reqwest::get(url).compat().await;
-        if resp.is_err() {
-            return Err(EodHistDataError::ConnectionFailed);
-        }
-        let resp = resp.unwrap();
+        let resp = reqwest::get(url).compat().await?;
         match resp.status() {
-            StatusCode::OK => match resp.json().await {
-                Ok(json) => Ok(json),
-                _ => Err(EodHistDataError::DeserializeFailed),
-            },
-
+            StatusCode::OK => Ok(resp.json().await?),
             status => Err(EodHistDataError::FetchFailed(status)),
         }
     }
@@ -195,7 +169,8 @@ mod tests {
         let provider = EodHistConnector::new(token);
         let start = NaiveDate::from_ymd(2020, 01, 01);
         let end = NaiveDate::from_ymd(2020, 01, 31);
-        let quotes = tokio_test::block_on(provider.get_quote_history("AAPL.US", start, end)).unwrap();
+        let quotes =
+            tokio_test::block_on(provider.get_quote_history("AAPL.US", start, end)).unwrap();
 
         assert_eq!(quotes.len(), 21);
         assert_eq!(quotes[0].date, "2020-01-02");
@@ -203,12 +178,13 @@ mod tests {
     }
 
     #[test]
-    fn test_get_dividen_history() {
+    fn test_get_dividend_history() {
         // Use the official test token
         let token = "OeAFFmMliFG5orCUuwAKQ8l4WWFQ67YX".to_string();
         let provider = EodHistConnector::new(token);
         let start = NaiveDate::from_ymd(2020, 01, 01);
-        let dividends = tokio_test::block_on(provider.get_dividend_history("AAPL.US", start)).unwrap();
+        let dividends =
+            tokio_test::block_on(provider.get_dividend_history("AAPL.US", start)).unwrap();
 
         assert!(dividends.len() >= 4);
     }
