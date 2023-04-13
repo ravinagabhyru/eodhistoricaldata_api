@@ -1,3 +1,6 @@
+Version 0.4.1
+* upgrade to chrono 0.5 (alpha version) to remove vulnerable dependencies
+
 Version 0.4.0
 * Using thiserror for error handling (cange of error messages)
 * Declaration Date of Dividend is now optional (since it is not always delivered)

@@ -17,7 +17,6 @@ use reqwest::StatusCode;
 use serde::Deserialize;
 use serde_json::Value;
 use thiserror::Error;
-use tokio_compat_02::FutureExt;
 
 #[derive(Deserialize, Debug)]
 pub struct RealTimeQuote {
@@ -139,7 +138,7 @@ impl EodHistConnector {
 
     /// Send request to eodhistoricaldata server and transform response to JSON value
     async fn send_request(&self, url: &str) -> Result<Value, EodHistDataError> {
-        let resp = reqwest::get(url).compat().await?;
+        let resp = reqwest::get(url).await?;
         match resp.status() {
             StatusCode::OK => Ok(resp.json().await?),
             status => Err(EodHistDataError::FetchFailed(status)),
@@ -167,8 +166,8 @@ mod tests {
         // Use the official test token
         let token = "OeAFFmMliFG5orCUuwAKQ8l4WWFQ67YX".to_string();
         let provider = EodHistConnector::new(token);
-        let start = NaiveDate::from_ymd(2020, 01, 01);
-        let end = NaiveDate::from_ymd(2020, 01, 31);
+        let start = NaiveDate::from_ymd_opt(2020, 01, 01).unwrap();
+        let end = NaiveDate::from_ymd_opt(2020, 01, 31).unwrap();
         let quotes =
             tokio_test::block_on(provider.get_quote_history("AAPL.US", start, end)).unwrap();
 
@@ -182,7 +181,7 @@ mod tests {
         // Use the official test token
         let token = "OeAFFmMliFG5orCUuwAKQ8l4WWFQ67YX".to_string();
         let provider = EodHistConnector::new(token);
-        let start = NaiveDate::from_ymd(2020, 01, 01);
+        let start = NaiveDate::from_ymd_opt(2020, 01, 01).unwrap();
         let dividends =
             tokio_test::block_on(provider.get_dividend_history("AAPL.US", start)).unwrap();
 
