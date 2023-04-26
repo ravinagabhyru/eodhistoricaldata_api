@@ -104,11 +104,93 @@ pub struct AssetInformation {
     is_delisted: bool,
 }
 
+#[allow(dead_code)]
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+struct Highlights {
+    market_capitalization: f64,
+    market_capitalization_mln: f64,
+    #[serde(rename = "EBITDA")]
+    ebitda: f64,
+    #[serde(rename = "PERatio")]
+    pe_ratio: f64,
+    #[serde(rename = "PEGRatio")]
+    peg_ratio: f64,
+    wall_street_target_price: f64,
+    book_value: f64,
+    dividend_share: f64,
+    dividend_yield: f64,
+    earnings_share: f64,
+    #[serde(rename = "EPSEstimateCurrentYear")]
+    eps_estimate_current_year: f64,
+    #[serde(rename = "EPSEstimateNextYear")]
+    eps_estimate_next_year: f64,
+    #[serde(rename = "EPSEstimateNextQuarter")]
+    eps_estimate_next_quarter: f64,
+    #[serde(rename = "EPSEstimateCurrentQuarter")]
+    eps_estimate_current_quarter: f64,
+    most_recent_quarter: String,
+    profit_margin: f64,
+    #[serde(rename = "OperatingMarginTTM")]
+    operating_margin_ttm: f64,
+    #[serde(rename = "ReturnOnAssetsTTM")]
+    return_on_assets_ttm: f64,
+    #[serde(rename = "ReturnOnEquityTTM")]
+    return_on_equity_ttm: f64,
+    #[serde(rename = "RevenueTTM")]
+    revenue_ttm: f64,
+    #[serde(rename = "RevenuePerShareTTM")]
+    revenue_per_share_ttm: f64,
+    #[serde(rename = "QuarterlyRevenueGrowthYOY")]
+    quarterly_revenue_growth_yoy: f64,
+    #[serde(rename = "GrossProfitTTM")]
+    gross_profit_ttm: f64,
+    #[serde(rename = "DilutedEpsTTM")]
+    diluted_eps_ttm: f64,
+    #[serde(rename = "QuarterlyEarningsGrowthYOY")]
+    quarterly_earnings_growth_yoy: f64,
+}
 
+#[allow(dead_code)]
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+struct Valuation {
+    #[serde(rename = "TrailingPE")]
+    trailing_pe: f64,
+    #[serde(rename = "ForwardPE")]
+    forward_pe: f64,
+    #[serde(rename = "PriceSalesTTM")]
+    price_sales_ttm: f64,
+    #[serde(rename = "PriceBookMRQ")]
+    price_book_mrq: f64,
+    enterprise_value: f64,
+    enterprise_value_revenue: f64,
+    enterprise_value_ebitda: f64,
+}
+
+#[allow(dead_code)]
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+struct SharesStats {
+    shares_outstanding: u64,
+    shares_float: u64,
+    percent_insiders: f64,
+    percent_institutions: f64,
+    shares_short: Option<u64>,
+    shares_short_prior_month: Option<u64>,
+    short_ratio: Option<f64>,
+    short_percent_outstanding: Option<f64>,
+    short_percent_float: Option<f64>,
+}
+
+#[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct FundamentalsResponse {
     general: AssetInformation,
+    highlights: Highlights,
+    valuation: Valuation,
+    shares_stats: SharesStats,
 }
 
 
@@ -205,10 +287,10 @@ impl EodHistConnector {
     }
 
     /// Retrieve the fundamentals for the given ticker
-    pub async fn get_asset_information(
+    pub async fn get_fundamentals_information(
         &self,
         ticker: &str,
-    ) -> Result<AssetInformation, EodHistDataError> {
+    ) -> Result<FundamentalsResponse, EodHistDataError> {
         let url: String = format!(
             "{}/fundamentals/{}?api_token={}",
             self.url,
@@ -217,7 +299,7 @@ impl EodHistConnector {
         );
         let resp = self.send_request(&url).await?;
         let fundamentals: FundamentalsResponse = serde_json::from_value(resp)?;
-        Ok(fundamentals.general)
+        Ok(fundamentals)
     }
 
     /// Send request to eodhistoricaldata server and transform response to JSON value
@@ -289,7 +371,8 @@ mod tests {
         // Use the official test token
         let token = "OeAFFmMliFG5orCUuwAKQ8l4WWFQ67YX".to_string();
         let provider = EodHistConnector::new(token);
-        let info = tokio_test::block_on(provider.get_asset_information("AAPL.US")).unwrap();
+        let fundamentals = tokio_test::block_on(provider.get_fundamentals_information("AAPL.US")).unwrap();
+        let info = fundamentals.general;
 
         assert_eq!(info.code, "AAPL");
         assert_eq!(info.asset_type, "Common Stock");
