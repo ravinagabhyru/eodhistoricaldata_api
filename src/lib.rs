@@ -72,125 +72,125 @@ pub struct Split {
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 pub struct AssetInformation {
-    code: String,
+    pub code: String,
     #[serde(rename = "Type")]
-    asset_type: String,
-    name: String,
-    exchange: String,
-    currency_code: String,
-    currency_name: String,
-    currency_symbol: String,
-    country_name: String,
+    pub asset_type: String,
+    pub name: String,
+    pub exchange: String,
+    pub currency_code: String,
+    pub currency_name: String,
+    pub currency_symbol: String,
+    pub country_name: String,
     #[serde(rename = "CountryISO")]
-    country_iso: String,
+    pub country_iso: String,
     #[serde(rename = "ISIN")]
-    isin: String,
+    pub isin: String,
     #[serde(rename = "LEI")]
-    lei: String,
-    primary_ticker: String,
+    pub lei: String,
+    pub primary_ticker: String,
     #[serde(rename = "CUSIP")]
-    cusip: String,
+    pub cusip: String,
     #[serde(rename = "CIK")]
-    cik: String,
+    pub cik: String,
     #[serde(rename = "IPODate")]
-    ipo_date: String,
-    sector: String,
-    industry: String,
-    gic_sector: String,
-    gic_group: String,
-    gic_industry: String,
-    gic_sub_industry: String,
-    home_category: String,
-    is_delisted: bool,
+    pub ipo_date: String,
+    pub sector: String,
+    pub industry: String,
+    pub gic_sector: String,
+    pub gic_group: String,
+    pub gic_industry: String,
+    pub gic_sub_industry: String,
+    pub home_category: String,
+    pub is_delisted: bool,
 }
 
 #[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-struct Highlights {
-    market_capitalization: f64,
-    market_capitalization_mln: f64,
+pub struct Highlights {
+    pub market_capitalization: f64,
+    pub market_capitalization_mln: f64,
     #[serde(rename = "EBITDA")]
-    ebitda: f64,
+    pub ebitda: f64,
     #[serde(rename = "PERatio")]
-    pe_ratio: f64,
+    pub pe_ratio: f64,
     #[serde(rename = "PEGRatio")]
-    peg_ratio: f64,
-    wall_street_target_price: f64,
-    book_value: f64,
-    dividend_share: f64,
-    dividend_yield: f64,
-    earnings_share: f64,
+    pub peg_ratio: f64,
+    pub wall_street_target_price: f64,
+    pub book_value: f64,
+    pub dividend_share: f64,
+    pub dividend_yield: f64,
+    pub earnings_share: f64,
     #[serde(rename = "EPSEstimateCurrentYear")]
-    eps_estimate_current_year: f64,
+    pub eps_estimate_current_year: f64,
     #[serde(rename = "EPSEstimateNextYear")]
-    eps_estimate_next_year: f64,
+    pub eps_estimate_next_year: f64,
     #[serde(rename = "EPSEstimateNextQuarter")]
-    eps_estimate_next_quarter: f64,
+    pub eps_estimate_next_quarter: f64,
     #[serde(rename = "EPSEstimateCurrentQuarter")]
-    eps_estimate_current_quarter: f64,
-    most_recent_quarter: String,
-    profit_margin: f64,
+    pub eps_estimate_current_quarter: f64,
+    pub most_recent_quarter: String,
+    pub profit_margin: f64,
     #[serde(rename = "OperatingMarginTTM")]
-    operating_margin_ttm: f64,
+    pub operating_margin_ttm: f64,
     #[serde(rename = "ReturnOnAssetsTTM")]
-    return_on_assets_ttm: f64,
+    pub return_on_assets_ttm: f64,
     #[serde(rename = "ReturnOnEquityTTM")]
-    return_on_equity_ttm: f64,
+    pub return_on_equity_ttm: f64,
     #[serde(rename = "RevenueTTM")]
-    revenue_ttm: f64,
+    pub revenue_ttm: f64,
     #[serde(rename = "RevenuePerShareTTM")]
-    revenue_per_share_ttm: f64,
+    pub revenue_per_share_ttm: f64,
     #[serde(rename = "QuarterlyRevenueGrowthYOY")]
-    quarterly_revenue_growth_yoy: f64,
+    pub quarterly_revenue_growth_yoy: f64,
     #[serde(rename = "GrossProfitTTM")]
-    gross_profit_ttm: f64,
+    pub gross_profit_ttm: f64,
     #[serde(rename = "DilutedEpsTTM")]
-    diluted_eps_ttm: f64,
+    pub diluted_eps_ttm: f64,
     #[serde(rename = "QuarterlyEarningsGrowthYOY")]
-    quarterly_earnings_growth_yoy: f64,
+    pub quarterly_earnings_growth_yoy: f64,
 }
 
 #[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-struct Valuation {
+pub struct Valuation {
     #[serde(rename = "TrailingPE")]
-    trailing_pe: f64,
+    pub trailing_pe: f64,
     #[serde(rename = "ForwardPE")]
-    forward_pe: f64,
+    pub forward_pe: f64,
     #[serde(rename = "PriceSalesTTM")]
-    price_sales_ttm: f64,
+    pub price_sales_ttm: f64,
     #[serde(rename = "PriceBookMRQ")]
-    price_book_mrq: f64,
-    enterprise_value: f64,
-    enterprise_value_revenue: f64,
-    enterprise_value_ebitda: f64,
+    pub price_book_mrq: f64,
+    pub enterprise_value: f64,
+    pub enterprise_value_revenue: f64,
+    pub enterprise_value_ebitda: f64,
 }
 
 #[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-struct SharesStats {
-    shares_outstanding: u64,
-    shares_float: u64,
-    percent_insiders: f64,
-    percent_institutions: f64,
-    shares_short: Option<u64>,
-    shares_short_prior_month: Option<u64>,
-    short_ratio: Option<f64>,
-    short_percent_outstanding: Option<f64>,
-    short_percent_float: Option<f64>,
+pub struct SharesStats {
+    pub shares_outstanding: u64,
+    pub shares_float: u64,
+    pub percent_insiders: f64,
+    pub percent_institutions: f64,
+    pub shares_short: Option<u64>,
+    pub shares_short_prior_month: Option<u64>,
+    pub short_ratio: Option<f64>,
+    pub short_percent_outstanding: Option<f64>,
+    pub short_percent_float: Option<f64>,
 }
 
 #[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct FundamentalsResponse {
-    general: AssetInformation,
-    highlights: Highlights,
-    valuation: Valuation,
-    shares_stats: SharesStats,
+    pub general: AssetInformation,
+    pub highlights: Highlights,
+    pub valuation: Valuation,
+    pub shares_stats: SharesStats,
 }
 
 
