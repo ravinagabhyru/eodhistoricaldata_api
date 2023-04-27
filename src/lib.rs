@@ -74,81 +74,81 @@ pub struct Split {
 pub struct AssetInformation {
     pub code: String,
     #[serde(rename = "Type")]
-    pub asset_type: String,
-    pub name: String,
-    pub exchange: String,
-    pub currency_code: String,
-    pub currency_name: String,
-    pub currency_symbol: String,
-    pub country_name: String,
+    pub asset_type: Option<String>,
+    pub name: Option<String>,
+    pub exchange: Option<String>,
+    pub currency_code: Option<String>,
+    pub currency_name: Option<String>,
+    pub currency_symbol: Option<String>,
+    pub country_name: Option<String>,
     #[serde(rename = "CountryISO")]
-    pub country_iso: String,
+    pub country_iso: Option<String>,
     #[serde(rename = "ISIN")]
-    pub isin: String,
+    pub isin: Option<String>,
     #[serde(rename = "LEI")]
-    pub lei: String,
-    pub primary_ticker: String,
+    pub lei: Option<String>,
+    pub primary_ticker: Option<String>,
     #[serde(rename = "CUSIP")]
-    pub cusip: String,
+    pub cusip: Option<String>,
     #[serde(rename = "CIK")]
-    pub cik: String,
+    pub cik: Option<String>,
     #[serde(rename = "IPODate")]
-    pub ipo_date: String,
-    pub sector: String,
-    pub industry: String,
-    pub gic_sector: String,
-    pub gic_group: String,
-    pub gic_industry: String,
-    pub gic_sub_industry: String,
-    pub home_category: String,
-    pub is_delisted: bool,
+    pub ipo_date: Option<String>,
+    pub sector: Option<String>,
+    pub industry: Option<String>,
+    pub gic_sector: Option<String>,
+    pub gic_group: Option<String>,
+    pub gic_industry: Option<String>,
+    pub gic_sub_industry: Option<String>,
+    pub home_category: Option<String>,
+    pub is_delisted: Option<bool>,
 }
 
 #[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct Highlights {
-    pub market_capitalization: f64,
-    pub market_capitalization_mln: f64,
+    pub market_capitalization: Option<f64>,
+    pub market_capitalization_mln: Option<f64>,
     #[serde(rename = "EBITDA")]
-    pub ebitda: f64,
+    pub ebitda: Option<f64>,
     #[serde(rename = "PERatio")]
-    pub pe_ratio: f64,
+    pub pe_ratio: Option<f64>,
     #[serde(rename = "PEGRatio")]
-    pub peg_ratio: f64,
-    pub wall_street_target_price: f64,
-    pub book_value: f64,
-    pub dividend_share: f64,
-    pub dividend_yield: f64,
-    pub earnings_share: f64,
+    pub peg_ratio: Option<f64>,
+    pub wall_street_target_price: Option<f64>,
+    pub book_value: Option<f64>,
+    pub dividend_share: Option<f64>,
+    pub dividend_yield: Option<f64>,
+    pub earnings_share: Option<f64>,
     #[serde(rename = "EPSEstimateCurrentYear")]
-    pub eps_estimate_current_year: f64,
+    pub eps_estimate_current_year: Option<f64>,
     #[serde(rename = "EPSEstimateNextYear")]
-    pub eps_estimate_next_year: f64,
+    pub eps_estimate_next_year: Option<f64>,
     #[serde(rename = "EPSEstimateNextQuarter")]
-    pub eps_estimate_next_quarter: f64,
+    pub eps_estimate_next_quarter: Option<f64>,
     #[serde(rename = "EPSEstimateCurrentQuarter")]
-    pub eps_estimate_current_quarter: f64,
-    pub most_recent_quarter: String,
-    pub profit_margin: f64,
+    pub eps_estimate_current_quarter: Option<f64>,
+    pub most_recent_quarter: Option<String>,
+    pub profit_margin: Option<f64>,
     #[serde(rename = "OperatingMarginTTM")]
-    pub operating_margin_ttm: f64,
+    pub operating_margin_ttm: Option<f64>,
     #[serde(rename = "ReturnOnAssetsTTM")]
-    pub return_on_assets_ttm: f64,
+    pub return_on_assets_ttm: Option<f64>,
     #[serde(rename = "ReturnOnEquityTTM")]
-    pub return_on_equity_ttm: f64,
+    pub return_on_equity_ttm: Option<f64>,
     #[serde(rename = "RevenueTTM")]
-    pub revenue_ttm: f64,
+    pub revenue_ttm: Option<f64>,
     #[serde(rename = "RevenuePerShareTTM")]
-    pub revenue_per_share_ttm: f64,
+    pub revenue_per_share_ttm: Option<f64>,
     #[serde(rename = "QuarterlyRevenueGrowthYOY")]
-    pub quarterly_revenue_growth_yoy: f64,
+    pub quarterly_revenue_growth_yoy: Option<f64>,
     #[serde(rename = "GrossProfitTTM")]
-    pub gross_profit_ttm: f64,
+    pub gross_profit_ttm: Option<f64>,
     #[serde(rename = "DilutedEpsTTM")]
-    pub diluted_eps_ttm: f64,
+    pub diluted_eps_ttm: Option<f64>,
     #[serde(rename = "QuarterlyEarningsGrowthYOY")]
-    pub quarterly_earnings_growth_yoy: f64,
+    pub quarterly_earnings_growth_yoy: Option<f64>,
 }
 
 #[allow(dead_code)]
@@ -156,26 +156,26 @@ pub struct Highlights {
 #[serde(rename_all = "PascalCase")]
 pub struct Valuation {
     #[serde(rename = "TrailingPE")]
-    pub trailing_pe: f64,
+    pub trailing_pe: Option<f64>,
     #[serde(rename = "ForwardPE")]
-    pub forward_pe: f64,
+    pub forward_pe: Option<f64>,
     #[serde(rename = "PriceSalesTTM")]
-    pub price_sales_ttm: f64,
+    pub price_sales_ttm: Option<f64>,
     #[serde(rename = "PriceBookMRQ")]
-    pub price_book_mrq: f64,
-    pub enterprise_value: f64,
-    pub enterprise_value_revenue: f64,
-    pub enterprise_value_ebitda: f64,
+    pub price_book_mrq: Option<f64>,
+    pub enterprise_value: Option<f64>,
+    pub enterprise_value_revenue: Option<f64>,
+    pub enterprise_value_ebitda: Option<f64>,
 }
 
 #[allow(dead_code)]
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub struct SharesStats {
-    pub shares_outstanding: u64,
-    pub shares_float: u64,
-    pub percent_insiders: f64,
-    pub percent_institutions: f64,
+    pub shares_outstanding: Option<u64>,
+    pub shares_float: Option<u64>,
+    pub percent_insiders: Option<f64>,
+    pub percent_institutions: Option<f64>,
     pub shares_short: Option<u64>,
     pub shares_short_prior_month: Option<u64>,
     pub short_ratio: Option<f64>,
@@ -375,27 +375,27 @@ mod tests {
         let info = fundamentals.general;
 
         assert_eq!(info.code, "AAPL");
-        assert_eq!(info.asset_type, "Common Stock");
-        assert!(info.name.contains("Apple Inc"));
-        assert_eq!(info.exchange, "NASDAQ");
-        assert_eq!(info.currency_code, "USD");
-        assert_eq!(info.currency_name, "US Dollar");
-        assert_eq!(info.currency_symbol, "$");
-        assert_eq!(info.country_name, "USA");
-        assert_eq!(info.country_iso, "US");
-        assert_eq!(info.isin, "US0378331005");
-        assert_eq!(info.lei, "HWUPKR0MPOU8FGXBT394");
-        assert_eq!(info.primary_ticker, "AAPL.US");
-        assert_eq!(info.cusip, "037833100");
-        assert_eq!(info.cik, "320193");
-        assert_eq!(info.ipo_date, "1980-12-12");
-        assert_eq!(info.sector, "Technology");
-        assert_eq!(info.industry, "Consumer Electronics");
-        assert_eq!(info.gic_sector, "Information Technology");
-        assert_eq!(info.gic_group, "Technology Hardware & Equipment");
-        assert_eq!(info.gic_industry, "Technology Hardware, Storage & Peripherals");
-        assert_eq!(info.gic_sub_industry, "Technology Hardware, Storage & Peripherals");
-        assert_eq!(info.home_category, "Domestic");
-        assert_eq!(info.is_delisted, false);
+        assert_eq!(info.asset_type.unwrap(), "Common Stock");
+        assert!(info.name.unwrap().contains("Apple Inc"));
+        assert_eq!(info.exchange.unwrap(), "NASDAQ");
+        assert_eq!(info.currency_code.unwrap(), "USD");
+        assert_eq!(info.currency_name.unwrap(), "US Dollar");
+        assert_eq!(info.currency_symbol.unwrap(), "$");
+        assert_eq!(info.country_name.unwrap(), "USA");
+        assert_eq!(info.country_iso.unwrap(), "US");
+        assert_eq!(info.isin.unwrap(), "US0378331005");
+        assert_eq!(info.lei.unwrap(), "HWUPKR0MPOU8FGXBT394");
+        assert_eq!(info.primary_ticker.unwrap(), "AAPL.US");
+        assert_eq!(info.cusip.unwrap(), "037833100");
+        assert_eq!(info.cik.unwrap(), "320193");
+        assert_eq!(info.ipo_date.unwrap(), "1980-12-12");
+        assert_eq!(info.sector.unwrap(), "Technology");
+        assert_eq!(info.industry.unwrap(), "Consumer Electronics");
+        assert_eq!(info.gic_sector.unwrap(), "Information Technology");
+        assert_eq!(info.gic_group.unwrap(), "Technology Hardware & Equipment");
+        assert_eq!(info.gic_industry.unwrap(), "Technology Hardware, Storage & Peripherals");
+        assert_eq!(info.gic_sub_industry.unwrap(), "Technology Hardware, Storage & Peripherals");
+        assert_eq!(info.home_category.unwrap(), "Domestic");
+        assert_eq!(info.is_delisted.unwrap(), false);
     }
 }
