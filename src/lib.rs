@@ -49,6 +49,20 @@ pub struct HistoricQuote {
 }
 
 #[derive(Deserialize, Debug)]
+pub struct EODQuote {
+    /// Quote date as string using the format `%Y-%m-%d`
+    pub code: String,
+    pub exchange_short_name: String,
+    pub date: String,
+    pub open: Option<f64>,
+    pub high: Option<f64>,
+    pub low: Option<f64>,
+    pub close: Option<f64>,
+    pub adjusted_close: f64,
+    pub volume: Option<usize>,
+}
+
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Dividend {
     pub currency: String,
@@ -194,6 +208,36 @@ pub struct FundamentalsResponse {
 }
 
 
+#[allow(dead_code)]
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct Exchange {
+    pub name: String,
+    pub code: String,
+    pub operating_mic: String,
+    pub country: String,
+    pub currency: String,
+    #[serde(rename = "CountryISO2")]
+    pub country_iso2: String,
+    #[serde(rename = "CountryISO3")]
+    pub country_iso3: String,
+}
+
+#[allow(dead_code)]
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "PascalCase")]
+pub struct Ticker {
+    pub code: String,
+    pub name: String,
+    pub country: String,
+    pub exchange: String,
+    pub currency: String,
+    #[serde(rename = "Type")]
+    pub asset_type: String,
+
+}
+
+
 #[derive(Error, Debug)]
 pub enum EodHistDataError {
     #[error("fetching the data from eodhistoricaldata failed with status code {0}")]
@@ -300,6 +344,63 @@ impl EodHistConnector {
         let resp = self.send_request(&url).await?;
         let fundamentals: FundamentalsResponse = serde_json::from_value(resp)?;
         Ok(fundamentals)
+    }
+
+    /// Retrieve the list of supported exchanges
+    pub async fn get_exchanges(&self) -> Result<Vec<Exchange>, EodHistDataError> {
+        let url: String = format!("{}/exchanges-list/?api_token={}", self.url, self.api_token);
+        let resp = self.send_request(&url).await?;
+        let exchanges: Vec<Exchange> = serde_json::from_value(resp)?;
+        Ok(exchanges)
+    }
+
+    /// Retrieve the list of tickers for the given exchange
+    pub async fn get_exchange_tickers(&self, exchange: &str) -> Result<Vec<Ticker>, EodHistDataError> {
+        let url: String = format!(
+            "{}/exchange-symbol-list/{}?api_token={}",
+            self.url, exchange, self.api_token
+        );
+        let resp = self.send_request(&url).await?;
+        let tickers: Vec<Ticker> = serde_json::from_value(resp)?;
+        Ok(tickers)
+    }
+
+    /// Retrieve fundamentals data in bulk
+    pub async fn get_fundamentals_bulk(
+        &self,
+        exchange: &str,
+        offset: u32,
+        limit: u32,
+    ) -> Result<Vec<FundamentalsResponse>, EodHistDataError> {
+        let url: String = format!(
+            "{}/bulk-fundamentals/{}?api_token={}&offset={}&limit={}",
+            self.url,
+            exchange,
+            self.api_token,
+            offset,
+            limit
+        );
+        let resp = self.send_request(&url).await?;
+        let fundamentals: Vec<FundamentalsResponse> = serde_json::from_value(resp)?;
+        Ok(fundamentals)
+    }
+
+    /// Retrieve eod bulk data for the given exchange and date
+    pub async fn get_eod_bulk(
+        &self,
+        exchange: &str,
+        date: NaiveDate,
+    ) -> Result<Vec<EODQuote>, EodHistDataError> {
+        let url: String = format!(
+            "{}/eod-bulk-last-day/{}?api_token={}&date={}",
+            self.url,
+            exchange,
+            self.api_token,
+            date.format("%Y-%m-%d")
+        );
+        let resp = self.send_request(&url).await?;
+        let quotes: Vec<EODQuote> = serde_json::from_value(resp)?;
+        Ok(quotes)
     }
 
     /// Send request to eodhistoricaldata server and transform response to JSON value
