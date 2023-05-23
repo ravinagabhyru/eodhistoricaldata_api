@@ -274,7 +274,7 @@ impl EodHistConnector {
         Ok(quote)
     }
 
-    /// Retrieve the quote history for the given ticker form date start to end (inklusive), if available
+    /// Retrieve the quote history for the given ticker form date start to end (inclusive), if available
     pub async fn get_quote_history(
         &self,
         ticker: &str,
@@ -336,7 +336,7 @@ impl EodHistConnector {
         ticker: &str,
     ) -> Result<FundamentalsResponse, EodHistDataError> {
         let url: String = format!(
-            "{}/fundamentals/{}?api_token={}",
+            "{}/fundamentals/{}?api_token={}&filter=General,Highlights,Valuation,SharesStats",
             self.url,
             ticker,
             self.api_token
@@ -373,7 +373,7 @@ impl EodHistConnector {
         limit: u32,
     ) -> Result<Vec<FundamentalsResponse>, EodHistDataError> {
         let url: String = format!(
-            "{}/bulk-fundamentals/{}?api_token={}&offset={}&limit={}&fmt=json",
+            "{}/bulk-fundamentals/{}?api_token={}&offset={}&limit={}&fmt=json&filter=General,Highlights,Valuation,SharesStats",
             self.url,
             exchange,
             self.api_token,
