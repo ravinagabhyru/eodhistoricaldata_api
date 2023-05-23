@@ -45,7 +45,7 @@ pub struct HistoricQuote {
     pub low: Option<f64>,
     pub close: Option<f64>,
     pub adjusted_close: f64,
-    pub volume: Option<usize>,
+    pub volume: Option<f64>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -59,7 +59,7 @@ pub struct EODQuote {
     pub low: Option<f64>,
     pub close: Option<f64>,
     pub adjusted_close: f64,
-    pub volume: Option<usize>,
+    pub volume: Option<f64>,
 }
 
 #[derive(Deserialize, Debug)]
