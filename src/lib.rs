@@ -373,7 +373,7 @@ impl EodHistConnector {
         limit: u32,
     ) -> Result<Vec<FundamentalsResponse>, EodHistDataError> {
         let url: String = format!(
-            "{}/bulk-fundamentals/{}?api_token={}&offset={}&limit={}",
+            "{}/bulk-fundamentals/{}?api_token={}&offset={}&limit={}&fmt=json",
             self.url,
             exchange,
             self.api_token,
@@ -392,7 +392,7 @@ impl EodHistConnector {
         date: NaiveDate,
     ) -> Result<Vec<EODQuote>, EodHistDataError> {
         let url: String = format!(
-            "{}/eod-bulk-last-day/{}?api_token={}&date={}",
+            "{}/eod-bulk-last-day/{}?api_token={}&date={}&fmt=json",
             self.url,
             exchange,
             self.api_token,
