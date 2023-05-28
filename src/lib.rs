@@ -119,7 +119,7 @@ pub struct AssetInformation {
 }
 
 #[allow(dead_code)]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Default)]
 #[serde(rename_all = "PascalCase")]
 pub struct Highlights {
     pub market_capitalization: Option<f64>,
@@ -166,7 +166,7 @@ pub struct Highlights {
 }
 
 #[allow(dead_code)]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Default)]
 #[serde(rename_all = "PascalCase")]
 pub struct Valuation {
     #[serde(rename = "TrailingPE")]
@@ -183,7 +183,7 @@ pub struct Valuation {
 }
 
 #[allow(dead_code)]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Default)]
 #[serde(rename_all = "PascalCase")]
 pub struct SharesStats {
     pub shares_outstanding: Option<u64>,
@@ -202,9 +202,9 @@ pub struct SharesStats {
 #[serde(rename_all = "PascalCase")]
 pub struct FundamentalsResponse {
     pub general: AssetInformation,
-    pub highlights: Highlights,
-    pub valuation: Valuation,
-    pub shares_stats: SharesStats,
+    pub highlights: Option<Highlights>,
+    pub valuation: Option<Valuation>,
+    pub shares_stats: Option<SharesStats>,
 }
 
 
@@ -336,7 +336,7 @@ impl EodHistConnector {
         ticker: &str,
     ) -> Result<FundamentalsResponse, EodHistDataError> {
         let url: String = format!(
-            "{}/fundamentals/{}?api_token={}&filter=General,Highlights,Valuation,SharesStats",
+            "{}/fundamentals/{}?api_token={}&fmt=json",
             self.url,
             ticker,
             self.api_token
@@ -373,7 +373,7 @@ impl EodHistConnector {
         limit: u32,
     ) -> Result<Vec<FundamentalsResponse>, EodHistDataError> {
         let url: String = format!(
-            "{}/bulk-fundamentals/{}?api_token={}&offset={}&limit={}&fmt=json&filter=General,Highlights,Valuation,SharesStats",
+            "{}/bulk-fundamentals/{}?api_token={}&offset={}&limit={}&fmt=json",
             self.url,
             exchange,
             self.api_token,
